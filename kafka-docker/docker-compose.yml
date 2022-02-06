@@ -7,7 +7,7 @@ networks:
 services:
   zookeeper:
     container_name: zookeeper
-    image: confluentinc/cp-zookeeper:5.5.1
+    image: confluentinc/cp-zookeeper:7.0.1
     hostname: zookeeper
     ports:
       - "2181:2181"
@@ -18,7 +18,7 @@ services:
  
   broker0:
     container_name: broker0
-    image: confluentinc/cp-kafka:5.5.1
+    image: confluentinc/cp-kafka:7.0.1
     hostname: broker0
     depends_on:
       - zookeeper
@@ -35,7 +35,7 @@ services:
  
   broker1:
     container_name: broker1
-    image: confluentinc/cp-kafka:5.5.1
+    image: confluentinc/cp-kafka:7.0.1
     hostname: broker1
     depends_on:
       - zookeeper
@@ -52,7 +52,7 @@ services:
  
   broker2:
     container_name: broker2
-    image: confluentinc/cp-kafka:5.5.1
+    image: confluentinc/cp-kafka:7.0.1
     hostname: broker2
     depends_on:
       - zookeeper
@@ -69,7 +69,7 @@ services:
  
   schema-registry:
     container_name: schema-registry
-    image: confluentinc/cp-schema-registry:5.5.1
+    image: confluentinc/cp-schema-registry:7.0.1
     hostname: schema-registry
     depends_on:
       - zookeeper
