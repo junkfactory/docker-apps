@@ -1,0 +1,59 @@
+version: '3'
+services:
+  mysql_master:
+    image: bosyotech/docker-mysql-replication:5.7
+    mem_limit: 256m
+    networks:
+      proxy_network:
+        ipv4_address: 10.6.0.10
+    ports:
+      - 3306:3306
+    volumes:
+      - ./mysql/data/master:/var/lib/mysql
+    env_file:
+      - ./mysql/container.env
+
+  mysql_slave:
+    image: bosyotech/docker-mysql-replication:5.7
+    mem_limit: 256m
+    networks:
+      proxy_network:
+        ipv4_address: 10.6.0.11
+    ports:
+      - 5506:3306
+    depends_on:
+      - mysql_master
+    volumes:
+      - ./mysql/data/slave:/var/lib/mysql
+    environment:
+      - MASTER_HOST=mysql_master
+    env_file:
+      - ./mysql/container.env
+  
+  proxy_sql:
+    image: severalnines/proxysql:2.0
+    container_name: proxy_sql
+    depends_on:
+      - mysql_master
+      - mysql_slave
+    restart: always
+    mem_limit: 256m
+    networks:
+      proxy_network:
+        ipv4_address: 10.6.0.9
+    ports:
+      - "127.0.0.1:60320:6032"
+      - "60330:6033"
+    volumes:
+      - "./proxysql:/etc/proxysql"
+    entrypoint: "proxysql -f -c /etc/proxysql/proxysql.conf"
+    env_file:
+      - ./mysql/container.env
+
+networks:
+  proxy_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.6.0.0/16
+          gateway: 10.6.0.1
